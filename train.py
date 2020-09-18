@@ -9,9 +9,11 @@ import argparse
 import os
 import random
 from packaging import version
-# os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 from model.input_fn import *
+from model.model_fn import *
+from model.training import *
 from  utils.utils import Params
 
 parser = argparse.ArgumentParser()
@@ -77,6 +79,15 @@ if __name__ == '__main__':
     eval_dataset  = input_fn(False, raw_images_list_eval, aligned_images_list_eval, params= params)
     print('[INFO] Data pipeline is built')
 
-"""
-TODO
-"""
+    # Define the model
+    print('=================================================')
+    print('[INFO] Creating the model...')
+    model_spec = model_fn(args.mode, params) 
+    if args.v:
+        model_spec['model'].summary()
+
+    # Train the model
+    print('=================================================')
+    train_model = Train_and_Evaluate(model_spec, train_dataset, eval_dataset, args.log_dir)
+    train_model.train_and_eval(params)
+    print('=================================================')

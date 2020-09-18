@@ -24,7 +24,7 @@ def load_image(image_string, size, raw_image_flag):
     if raw_image_flag:
         image = tf.image.resize(image, [size, size]) 
     else:
-        image = tf.image.resize(image, [290, 290]) 
+        image = tf.image.resize(image, [240, 240]) 
 
     return image
 
