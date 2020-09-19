@@ -85,11 +85,13 @@ def model_fn(mode, params, reuse=False):
     # -----------------------------------------------------------
     # METRICS AND SUMMARIES
     metrics = {
-        'train_accuracy' : tf.keras.metrics.Mean(name='train_loss', dtype=tf.float32),
-        'train_loss' : tf.keras.metrics.MeanSquaredError(name='train_mse', dtype=tf.float32),
+        'train_loss' : tf.keras.metrics.Mean(name='train_loss', dtype=tf.float32),
+        'train_MSE' : tf.keras.metrics.MeanSquaredError(name='train_mse', dtype=tf.float32),
+        'train_KLD' : tf.keras.metrics.KLDivergence(name='train_kld'),
 
-        'test_accuracy' : tf.keras.metrics.Mean(name='test_loss', dtype=tf.float32),
-        'test_loss' :tf.keras.metrics.MeanSquaredError(name='test_mse', dtype=tf.float32)
+        'test_MSE' :tf.keras.metrics.MeanSquaredError(name='test_mse', dtype=tf.float32),
+        'test_KLD' :tf.keras.metrics.KLDivergence(name='test_kld')
+
     }
     # -----------------------------------------------------------
     # MODEL SPECIFICATION
