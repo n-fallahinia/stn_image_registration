@@ -45,7 +45,7 @@ class Train_and_Evaluate():
         # keep track of our gradients
         with tf.GradientTape() as tape:
             # make a prediction using the model and then calculate the loss
-            logits = self.model(x_train, training=True)
+            logits = self.model(x_train, training=True) #!!!!! FIX THE NEGATIVE VALUE ISSUE !!!!
             loss = self.loss_object(y_train, logits)
         # calculate the gradients using our tape and then update the model weights
         grads = tape.gradient(loss, self.model.trainable_variables)
@@ -106,6 +106,8 @@ class Train_and_Evaluate():
         # loop over the number of epochs
         epochStart = time.time()
         for epoch in range(begin_at_epoch, begin_at_epoch + params.num_epochs):
+
+            step = 0
             # sys.stdout.flush()
             # Compute number of batches in one epoch (one full pass over the training set)
             num_steps_train = int(np.ceil(params.train_size / params.batch_size))
@@ -127,14 +129,19 @@ class Train_and_Evaluate():
                     }
                     pbar.set_postfix(metrics)
                     pbar.update()
-                # record train summary for tensor board
+
+                    # record train summary for tensor board
+                    if 0 < step < 15:
+                        with train_summary_writer.as_default():
+                            tf.summary.image('training images', x_train, step=step + 1, max_outputs=5)
+                            tf.summary.image('logit images', logits, step=step + 1, max_outputs=5)
+                            tf.summary.image('label images', y_train, step=step + 1, max_outputs=5)
+                    step = step +1
+
                 with train_summary_writer.as_default():
                     tf.summary.scalar('loss', self.train_loss.result(), step=epoch + 1)
                     tf.summary.scalar('mse', self.train_accuracy_mse.result(), step=epoch + 1)
                     tf.summary.scalar('kld', self.train_accuracy_kld.result(), step=epoch + 1)
-                    
-                    tf.summary.image('training images', x_train, step=epoch + 1, max_outputs=10)
-                    tf.summary.image('logit images', logits, step=epoch + 1, max_outputs=10)
         # ----------------------------------------------------------------------
         # EVALUATION SESSION
                 # loop over the eval data in batch size increments

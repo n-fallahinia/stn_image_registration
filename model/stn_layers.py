@@ -131,7 +131,7 @@ class BilinearInterpolation(Layer):
         # transformations = K.cast(affine_transformation[:, 0:2, :], 'float32')
         regular_grids = self._make_regular_grids(batch_size, *output_size)
         sampled_grids = K.batch_dot(transformations, regular_grids)
-        interpolated_image = self._interpolate(X, sampled_grids, output_size)
-        new_shape = (batch_size, output_size[0], output_size[1], num_channels)
+        interpolated_image = self._interpolate(X, sampled_grids, output_size) # Getting nrgative values in here!!!
+        new_shape = (batch_size, output_size[0], output_size[1], num_channels) 
         interpolated_image = K.reshape(interpolated_image, new_shape)
         return interpolated_image

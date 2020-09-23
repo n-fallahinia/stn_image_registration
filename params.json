@@ -1,17 +1,17 @@
 {   
-    "batch_size": 32,
-    "num_epochs": 20,
+    "batch_size": 16,
+    "num_epochs": 1,
 
     "bn_momentum": 0.9,
-    "learning_rate": 1e-3,
+    "learning_rate": 1e-4,
     "use_batch_norm": false,
-    "use_dropout": true,
-    "adam_opt": false,
-    "use_klD": false,
+    "adam_opt": true,
+    "use_klD": true,
 
     "image_size": 580,
+    "label_size": 240,
 
     "num_parallel_calls": 4,
     "save_summary_steps": 1,
-    "save_model": true
+    "save_model": false
 }
