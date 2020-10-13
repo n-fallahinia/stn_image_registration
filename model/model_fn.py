@@ -1,6 +1,5 @@
 """Define the model."""
 
-import keras.backend as K
 import tensorflow as tf
 
 from tensorflow.keras.models import Model
@@ -9,11 +8,13 @@ from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import Flatten
 from tensorflow.keras.layers import Conv2D
 from tensorflow.keras.layers import MaxPooling2D
+from tensorflow.keras.models import Sequential
+from tensorflow.keras import regularizers
 
 from model.utils import get_initial_weights
 from model.stn_layers import BilinearInterpolation
 
-def buil_model(is_training, image_size, params, sampling_size =(240, 240), classes = 3):
+def buil_model(is_training, image_size, params, sampling_size =(240, 240), channels = 3):
     
     """Compute logits of the model (output distribution)
     Args:
@@ -25,7 +26,7 @@ def buil_model(is_training, image_size, params, sampling_size =(240, 240), class
     """
     IMG_SHAPE = image_size
     chanDim = -1
-    assert IMG_SHAPE == (params.image_size, params.image_size, 3)
+    assert IMG_SHAPE == (params.image_size_w, params.image_size_h, channels)
 
     # -----------------------------------------------------------
     # MODEL: define the layers of the model
@@ -34,14 +35,17 @@ def buil_model(is_training, image_size, params, sampling_size =(240, 240), class
     # THIS IS JUST THE LOCALIZATION NETWORK
 
     image = Input(shape=IMG_SHAPE)
-    locnet = Conv2D(32, kernel_size=7, activation='relu')(image)
+    locnet = MaxPooling2D(pool_size=(2, 2))(image)
+    locnet = Conv2D(10, kernel_size=5, activation='relu')(locnet)
     locnet = MaxPooling2D(pool_size=(2, 2))(locnet)
 
-    locnet = Conv2D(16, kernel_size=5, activation='relu')(locnet)
-    locnet = MaxPooling2D(pool_size=(2, 2))(locnet)
+    # locnet = Conv2D(32, kernel_size=5, activation='relu')(locnet)
+    # locnet = MaxPooling2D(pool_size=(2, 2))(locnet)
 
     locnet = Flatten()(locnet)
-    locnet = Dense(50, activation='relu')(locnet)
+    locnet = Dense(50, activation='relu',
+            kernel_regularizer = regularizers.l2(1e-3),
+            activity_regularizer = regularizers.l2(1e-3))(locnet)
     weights = get_initial_weights(50)
     locnet = Dense(6, weights=weights)(locnet)
 
@@ -63,7 +67,7 @@ def model_fn(mode, params, reuse=False):
         model_spec: (dict) contains the graph operations or nodes needed for training / evaluation
     """
     is_training = (mode == 'train')
-    image_size = (params.image_size, params.image_size, 3)
+    image_size = (params.image_size_w, params.image_size_h, 3)
     # -----------------------------------------------------------
     # MODEL:
     # Compute the output distribution of the model and the predictions
@@ -71,8 +75,13 @@ def model_fn(mode, params, reuse=False):
     print('[INFO] Final model is loaded ...')
     # TODO add Prediction: prediction = model(x, training=False)
     # Define loss and accuracy
-    if params.use_klD:
+
+    if params.use_msle:
+        loss_object = tf.keras.losses.MeanSquaredLogarithmicError()
+
+    elif params.use_klD:
         loss_object = tf.keras.losses.KLDivergence(reduction="auto")
+
     else:
         loss_object = tf.keras.losses.MeanSquaredError(reduction=tf.keras.losses.Reduction.AUTO)
 

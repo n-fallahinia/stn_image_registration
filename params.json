@@ -1,14 +1,16 @@
 {   
-    "batch_size": 16,
-    "num_epochs": 1,
+    "batch_size": 32,
+    "num_epochs": 5,
 
     "bn_momentum": 0.9,
     "learning_rate": 1e-4,
     "use_batch_norm": false,
     "adam_opt": true,
-    "use_klD": true,
+    "use_klD": false,
+    "use_msle": false,
 
-    "image_size": 580,
+    "image_size_w": 680,
+    "image_size_h": 460,
     "label_size": 240,
 
     "num_parallel_calls": 4,

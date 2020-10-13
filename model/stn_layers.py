@@ -16,11 +16,6 @@ else:
 
 class BilinearInterpolation(Layer):
     """Performs bilinear interpolation as a keras layer
-    References
-    ----------
-    [1]  Spatial Transformer Networks, Max Jaderberg, et al.
-    [2]  https://github.com/skaae/transformer_network
-    [3]  https://github.com/EderSantana/seya
     """
 
     def __init__(self, output_size, **kwargs):

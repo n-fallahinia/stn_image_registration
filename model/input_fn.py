@@ -2,27 +2,28 @@
 import tensorflow as tf
 from utils.data import *
 
-def preprocess_data(raw_image, aligned_image, size, label_size):
+def preprocess_data(raw_image, aligned_image, size_w, size_h, label_size):
     """ preprocessing images """   
 
     raw_image_string = tf.io.read_file(raw_image)
-    raw_image = load_image(raw_image_string, size, label_size, raw_image_flag = True)
+    raw_image = load_image(raw_image_string, size_w, size_h, label_size, raw_image_flag = True)
     raw_image = augment_image(raw_image)
 
     aligned_image_string = tf.io.read_file(aligned_image)
-    aligned_image = load_image(aligned_image_string, size, label_size, raw_image_flag = False)
+    aligned_image = load_image(aligned_image_string, size_w, size_h, label_size, raw_image_flag = False)
     aligned_image = augment_image(aligned_image)
 
     return raw_image, aligned_image
 
 
-def load_image(image_string, size, label_size, raw_image_flag):
+def load_image(image_string, size_w, size_h, label_size, raw_image_flag):
     """ decoding the images """   
 
     image = tf.image.decode_jpeg(image_string, channels=3)
     image = tf.image.convert_image_dtype(image, tf.float32)
+    # image = tf.expand_dims(image[:,:,1], 2) # only the green channel is being used
     if raw_image_flag:
-        image = tf.image.resize(image, [size, size]) 
+        image = tf.image.resize(image, [size_w, size_h]) 
     else:
         image = tf.image.resize(image, [label_size, label_size]) 
 
@@ -48,7 +49,7 @@ def input_fn(is_training, filenames_raw, filenames_aligned, params = None):
     assert len(filenames_raw) == len(filenames_aligned), "raw and aligned images should have same length"
 
     # Create a Dataset serving batches of images and labels
-    preproc_fn = lambda f, l: preprocess_data(f, l, params.image_size, params.label_size)
+    preproc_fn = lambda f, l: preprocess_data(f, l, params.image_size_w, params.image_size_h, params.label_size)
 
     if is_training:
         dataset = (tf.data.Dataset.from_tensor_slices((filenames_raw, filenames_aligned))
