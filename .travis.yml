@@ -8,4 +8,4 @@ install:
 
 # command to run tests
 script:
-  - python3 train
+  - python3 train.py
