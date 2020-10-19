@@ -1,5 +1,8 @@
 numpy
 Pillow
-tensorflow==2.3.0
+sklearn
+tensorflow-gpu
 tabulate
 tqdm
+keract
+quiver_engine
