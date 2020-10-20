@@ -36,17 +36,17 @@ def buil_model(is_training, image_size, params, sampling_size =(240, 240), chann
 
     image = Input(shape=IMG_SHAPE)
     locnet = MaxPooling2D(pool_size=(2, 2))(image)
-    locnet = Conv2D(10, kernel_size=5, activation='relu')(locnet)
+    locnet = Conv2D(5, kernel_size=5, activation='relu')(locnet)
     locnet = MaxPooling2D(pool_size=(2, 2))(locnet)
 
-    # locnet = Conv2D(32, kernel_size=5, activation='relu')(locnet)
+    # locnet = Conv2D(10, kernel_size=7, activation='relu')(locnet)
     # locnet = MaxPooling2D(pool_size=(2, 2))(locnet)
 
     locnet = Flatten()(locnet)
-    locnet = Dense(50, activation='relu',
+    locnet = Dense(100, activation='relu',
             kernel_regularizer = regularizers.l2(1e-3),
             activity_regularizer = regularizers.l2(1e-3))(locnet)
-    weights = get_initial_weights(50)
+    weights = get_initial_weights(100)
     locnet = Dense(6, weights=weights)(locnet)
 
     x = BilinearInterpolation(sampling_size)([image, locnet])

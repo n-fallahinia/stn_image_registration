@@ -31,10 +31,10 @@ from utils.data import load_data_withIdx
 
 parser = argparse.ArgumentParser(description ='Build Fingernail_STN dataset')
 
-parser.add_argument('--data_dir', default='./dataset_1',
+parser.add_argument('--data_dir', default='./dataset_2',
                     help="Directory containing the dataset")
 
-parser.add_argument('--output_dir', default='./data_1',
+parser.add_argument('--output_dir', default='./data_3',
                     help="Where to write the new data")
                 
 parser.add_argument('-v', dest ='verbose', 
@@ -72,7 +72,7 @@ if __name__ == '__main__':
     os.mkdir(test_data_dir)
     os.mkdir(eval_data_dir)
              
-    subjIdx_list = [1,2,3] # MUST SPECIFY THE IDX LIST HERE
+    subjIdx_list = [1] # MUST SPECIFY THE IDX LIST HERE
     load_data_withIdx(subjIdx_list, filenames)
     print('[INFO] Done building data')
 

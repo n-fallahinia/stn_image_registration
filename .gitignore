@@ -3,7 +3,8 @@
 dataset_*/
 log/
 data_*/
-test/
+sanity_test/
+tmp/
 
 
 # Byte-compiled / optimized / DLL files

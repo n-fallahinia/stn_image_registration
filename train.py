@@ -17,7 +17,7 @@ from model.training import *
 from  utils.utils import Params
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--data_dir', default='./data_1',
+parser.add_argument('--data_dir', default='./data_3',
                     help="Directory containing the dataset")
 
 parser.add_argument('--log_dir', default="./log",
@@ -26,7 +26,7 @@ parser.add_argument('--log_dir', default="./log",
 parser.add_argument('--mode', default='train', 
                     help="train or test mode")
 
-parser.add_argument('--v', default=True,
+parser.add_argument('--v', default=False,
                     help ='verbose mode')
 
 if __name__ == '__main__':
@@ -58,12 +58,12 @@ if __name__ == '__main__':
     eval_filenames = [os.path.join(eval_data_dir, f) for f in os.listdir(eval_data_dir)]
 
     # Get the aligned images list
-    aligned_images_list_train = glob.glob(train_filenames[0] + '/*.jpg')
-    aligned_images_list_eval = glob.glob(eval_filenames[0] + '/*.jpg')
+    aligned_images_list_train = glob.glob(train_filenames[1] + '/*.jpg')
+    aligned_images_list_eval = glob.glob(eval_filenames[1] + '/*.jpg')
 
     # Get the raw images list
-    raw_images_list_train = glob.glob(train_filenames[1] + '/*.jpg')
-    raw_images_list_eval = glob.glob(eval_filenames[1] + '/*.jpg')
+    raw_images_list_train = glob.glob(train_filenames[0] + '/*.jpg')
+    raw_images_list_eval = glob.glob(eval_filenames[0] + '/*.jpg')
 
     # Specify the sizes of the dataset we train on and evaluate on
     params.train_size = len(aligned_images_list_train)
@@ -90,4 +90,9 @@ if __name__ == '__main__':
     print('=================================================')
     train_model = Train_and_Evaluate(model_spec, train_dataset, eval_dataset, args.log_dir)
     train_model.train_and_eval(params)
+    model = train_model.model
     print('=================================================')
+
+    best_final_path = os.path.join("./test", "best_full_model_path")
+    tf.saved_model.save(model, best_final_path)
+    print("[INFO] Final model save in {}".format(best_final_path))

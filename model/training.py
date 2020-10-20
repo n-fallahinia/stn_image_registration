@@ -124,24 +124,22 @@ class Train_and_Evaluate():
                     # Display metrics at the end of each epoch.
                     metrics = {
                         "Train_MSE": '{:04.2f}'.format(self.train_accuracy_mse.result().numpy()),
-                        "Train_KLD": '{:04.2f}'.format(self.train_accuracy_kld.result().numpy()),
                         "Train_Loss": '{:04.2f}'.format(self.train_loss.result().numpy())
                     }
                     pbar.set_postfix(metrics)
                     pbar.update()
 
                     # record train summary for tensor board
-                    if 0 < step < 15:
-                        with train_summary_writer.as_default():
-                            tf.summary.image('training images', x_train, step=step + 1, max_outputs=5)
-                            tf.summary.image('logit images', logits, step=step + 1, max_outputs=5)
-                            tf.summary.image('label images', y_train, step=step + 1, max_outputs=5)
+                    # if 0 < step < 30:
+                    with train_summary_writer.as_default():
+                        tf.summary.image('training images', x_train, step=epoch + step + 1, max_outputs=5)
+                        tf.summary.image('logit images', logits, step=epoch + step + 1, max_outputs=5)
+                        tf.summary.image('label images', y_train, step=epoch + step + 1, max_outputs=5)
                     step = step +1
 
                 with train_summary_writer.as_default():
                     tf.summary.scalar('loss', self.train_loss.result(), step=epoch + 1)
                     tf.summary.scalar('mse', self.train_accuracy_mse.result(), step=epoch + 1)
-                    tf.summary.scalar('kld', self.train_accuracy_kld.result(), step=epoch + 1)
         # ----------------------------------------------------------------------
         # EVALUATION SESSION
                 # loop over the eval data in batch size increments
@@ -149,13 +147,11 @@ class Train_and_Evaluate():
                     eval_loss = self.test_step(x_eval, y_eval)
                     # Display metrics at the end of each epoch.
                     metrics["Eval_MSE"] = '{:04.2f}'.format(self.test_accuracy_mse.result().numpy())
-                    metrics["Eval_KLD"] = '{:04.2f}'.format(self.test_accuracy_kld.result().numpy())
                     pbar.set_postfix(metrics)
                 pbar.close()
                 # record train summary for tensor board
                 with eval_summary_writer.as_default():
                     tf.summary.scalar('mse', self.test_accuracy_mse.result(), step=epoch + 1)
-                    tf.summary.scalar('kld', self.test_accuracy_kld.result(), step=epoch + 1)
         # ----------------------------------------------------------------------
             metrics["Epoch"] = '{0:d}'.format(epoch + 1)
             # If best_eval, save the model at best_save_path 
